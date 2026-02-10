@@ -52,7 +52,10 @@ export const TEXT = {
     },
     code_view: {
         title: 'Code Comparison',
-        hint: 'Compare the source code with intermediary PTX or SASS representations.',
+        hint: {
+            nvidia: 'Compare the source code with intermediary PTX or SASS representations.',
+            amd: 'Compare the source code with the assembly representation.'
+        },
         toggle: {
             old: 'Original kernel',
             new: 'Current kernel'
