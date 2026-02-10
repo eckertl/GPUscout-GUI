@@ -181,7 +181,7 @@ Lines highlighted in blue correspond to general information, while lines marked 
             top_section: {
                 shared_usage: {
                     title: 'Current usage of shared memory',
-                    hint: 'A summary of the current usage of shared memory. Escpecially bank conflicts should be resolved before continuing'
+                    hint: 'A summary of the current usage of shared memory. Especially bank conflicts should be resolved before continuing'
                 }
             }
         }
