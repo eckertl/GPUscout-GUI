@@ -9,13 +9,24 @@ export const assemblyInstructionRegex = new RegExp(
     '.*'
 );
 
-export const regexKrnName = new RegExp(
+// If one would want to change back to the demangled implementation
+export const regexKrnNameDemangled = new RegExp(
     '^;' +                  // leading ';'
     '\\s' +                         // one space
     '(\\w+)' +                      // kernel name (group 1)
     '\\([\\w,*\\s]*\\)' +           // parameter list (...)
     '\\(\\):' +                     // ()():
     '\\s*'                          // optional trailing spaces
+);
+
+// Extracts the kernel name out of the object file
+export const regexKrnName = new RegExp(
+    "^;" +      // leading ';'
+    "\\s" +             // matches leading whitespace
+    "(_+Z\\d+" +        // matches _Z<digits> (group 1)
+    "\\w+)" +           // matches kernel name  (group 1)
+    "\\(\\)" +          // matches ()
+    ":\\s*"             // matches : and following whitespaces
 );
 
 // matches lines containing source code location information

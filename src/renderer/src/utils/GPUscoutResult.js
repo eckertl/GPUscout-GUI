@@ -220,8 +220,7 @@ export class GPUscoutResult {
 
             // Iterate over all kernels
             for (let [kernel, analysisData] of Object.entries(resultJSON.analyses[analysisDefinition.name])) {
-                // Use demangled kernel name if the vendor is nvidia
-                kernel = this._vendor === "nvidia" ? resultJSON['kernels'][kernel] : kernel; //TODO AMD demangled Kernel implementieren
+                kernel = resultJSON['kernels'][kernel];
 
                 let binaryMapping
                 let binaryLines
@@ -722,10 +721,10 @@ export class GPUscoutResult {
      * @param {Object.<String, Array<{line_number: Number, pc_offset: String, stalls: Array.<Array.<Number, String>>}>>} stalls An object containing all recorded pc sampling stalls
      * @param {Object.<String, String>} kernels The mapping of kernel names to their demangled names
      */
-    _parseAssemblyCode(assemblyCode/*, assemblyRegisters*/, stalls, kernels) {
+    _parseAssemblyCode(assemblyCode, assemblyRegisters, stalls, kernels) {
         let currentSourceLine = -1;
         let currentKernel = '';
-        let kernelID = '';
+        let mangledKernel = '';
         let currentSourceFile = '';
         let currentSassLine = '';
         let currentAssemblyLine = '';
@@ -738,7 +737,7 @@ export class GPUscoutResult {
 
         currentKernel = '';
 
-        // Iterate through every line of the assembly code file
+        // Iterate through every line of the assembly code object file
         for (let line of assemblyCode.split('\n')) {
             const kernelStart = line.match(regexKrnName);
             if (currentSourceLine === -1 && !kernelStart) {
@@ -755,18 +754,18 @@ export class GPUscoutResult {
 
             if (kernelStart) {
                 console.log(kernelStart[1])
-                // ; spillingKernel(float*, float*)():
+                // ; _Z14spillingKernelPfS_():
                 // We are at the beginning of a new kernel -> Set of relevant maps and change currentKernel and code lines
                 currentSourceLine = 0;
                 currentAssemblyLine = '';
-                console.log("AMD kernels: "+ kernels);
-                kernelID = line.replace('; ', '').replace(':', '').replace('()', '');
-                console.log("AMD kernelID: "+ kernelID);
-                currentKernel = kernels[kernelID];
+                mangledKernel = line.replace('; ', '').replace(':', '').replace('()', '');
+                console.log("AMD kernelID: "+ mangledKernel);
+                currentKernel = kernels[mangledKernel]; // demangled kernel
                 // Not all kernels are analyzed by GPUscout, so not every kernel is known
-                if (currentKernel !== kernelID) this._kernels.push(currentKernel);
+                if (currentKernel !== mangledKernel) this._kernels.push(currentKernel); // TODO logic error? should always be true in both amd and nvidia
+
                 console.log(kernels);
-                relevantStalls = stalls[kernelID] || [];
+                relevantStalls = stalls[mangledKernel] || [];
                 totalStalls = relevantStalls.flatMap((s) => s['stalls'].map((st) => st[1])).reduce((a, b) => a + b, 0);
 
                 console.log("Current Kernel" + currentKernel);
