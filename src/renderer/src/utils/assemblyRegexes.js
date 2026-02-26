@@ -42,9 +42,9 @@ export const regexLoc = new RegExp(
 // matches lines containing a branch label
 // 0000000000001a94 <L0>:
 export const regexBrcLbl = new RegExp(
-    '^[0-9a-z]{16}' +  // 16 hex chars (0000000000001a94) of address
+    '^([0-9a-z]{16})' +  // 16 hex chars (0000000000001a94) of address (group 1)
     '\\s' +             // one space
-    '<(L[0-9][0-9]?)>' + // <L0>, <L01>, etc (group 1)
+    '<(L[0-9][0-9]?)>' + // <L0>, <L01>, etc (group 2)
     ':\\s*'              // : followed by optional trailing spaces
 );
 

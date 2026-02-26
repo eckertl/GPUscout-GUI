@@ -800,8 +800,8 @@ export class GPUscoutResult {
                     // 0000000000001e80 <L0>:
                     // This line is a label
 
-                    console.log("Label Reg: " + labelReg[1]);
-                    address = labelReg[0];
+                    console.log("Label Reg: " + labelReg[2]);
+                    address = labelReg[1];
                 }
 
                 if (instReg) {
@@ -852,7 +852,7 @@ export class GPUscoutResult {
 
                 this._assemblyCodeLines[currentKernel].push({
                     address: address,
-                    tokens: labelReg ? [labelReg[2]] : [instReg[1]].concat(instReg[2].trim().split(/([+-,.:[\]() ])/)),
+                    tokens: labelReg ? [labelReg[2]] : [instReg[1]].concat(instReg[2].trim().split(/([+-,.:[\]() ])/)), // TODO split regex
                     liveRegisters: liveRegisters,
                     stalls: lineStalls
                 });
