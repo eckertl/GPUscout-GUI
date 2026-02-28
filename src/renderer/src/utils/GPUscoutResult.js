@@ -185,7 +185,7 @@ export class GPUscoutResult {
             console.log("Test123beforeassemblyCo");
             this._parseAssemblyCode(
                 resultJSON.binary_files.assembly,
-                //resultJSON.binary_files.sass_registers,
+                resultJSON.register_pressure,
                 resultJSON.stalls,
                 resultJSON.kernels
             );
@@ -731,6 +731,26 @@ export class GPUscoutResult {
         let relevantStalls = [];
         let totalStalls = 0;
 
+
+        // load the register pressure information
+        let amdRegisterMap = {};
+        for (const [kernelID, entries] of Object.entries(assemblyRegisters || {})) {
+            currentKernel = kernels[kernelID];
+            amdRegisterMap[currentKernel] = {};
+
+            let regObj = {}; // stores object for the current kernel
+            // Iterate through the entries
+            for (const entry of entries) {
+                const address = String(entry.pcOffset);
+                const vgp = Number(entry.vgp_reg ?? 0);
+                regObj[address] = [vgp, 0];
+            }
+            amdRegisterMap[currentKernel] = regObj;
+            regObj = {};
+        }
+
+        currentKernel = '';
+
         console.log("Test123");
         // Map each line number with the line containing the register information
         // TODO
@@ -817,12 +837,10 @@ export class GPUscoutResult {
 
                     //TODO remove these two placeholder lines
 
-                    // Save live register info
-                    /* TODO
-                    if (sassRegisterMap[currentKernel] && sassRegisterMap[currentKernel][address]) {
-                        liveRegisters = sassRegisterMap[currentKernel][address];
+                    // Save live register info TODO
+                    if (amdRegisterMap[currentKernel] && amdRegisterMap[currentKernel][address]) {
+                        liveRegisters = amdRegisterMap[currentKernel][address];
                     }
-                     */
                 }
 
                 // Get stalls for this line
