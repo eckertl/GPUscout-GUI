@@ -743,7 +743,8 @@ export class GPUscoutResult {
             for (const entry of entries) {
                 const address = String(entry.pcOffset);
                 const vgp = Number(entry.vgp_reg ?? 0);
-                regObj[address] = [vgp, 0];
+                const sgp = Number(entry.sgp_reg ?? 0);
+                regObj[address] = [vgp, sgp];
             }
             amdRegisterMap[currentKernel] = regObj;
             regObj = {};
