@@ -428,6 +428,14 @@ export class GPUscoutResult {
 
     /**
      * @param {String} kernel The name of the kernel
+     * @returns {Array.<{address: String, tokens: String[]}>} All assembly lines of this kernel
+     */
+    getAssemblyCodeLines(kernel) {
+        return this._assemblyCodeLines[kernel];
+    }
+
+    /**
+     * @param {String} kernel The name of the kernel
      * @returns {Array.<{address: Number, tokens: String[]}>} All source lines of this kernel
      */
     getSourceCodeLines(kernel) {
@@ -450,6 +458,15 @@ export class GPUscoutResult {
      */
     getSourceToPtxLines(kernel, line, file) {
         return this._sourceToPtxLines[kernel][file][line] || [];
+    }
+
+    /**
+     * @param {String} kernel The name of the kernel
+     * @param {String} line The source line to get assembly lines for
+     * @returns {String[]} All assembly lines corresponding to this source line
+     */
+    getSourceToAssemblyLines(kernel, line, file) {
+        return this._sourceToAssemblyLines[kernel][file][line] || [];
     }
 
     /**
