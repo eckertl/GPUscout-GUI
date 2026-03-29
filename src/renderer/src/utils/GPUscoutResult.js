@@ -142,13 +142,13 @@ export class GPUscoutResult {
             }
         }
         else if (this._vendor === "amd") {
-            // TODO
+            // TODO PC Sampling
             console.log(this._vendor);
         }
 
 
 
-        // Remove parameters from kernels where possible
+        // Remove parameters from kernels where possible - respects function overloading
         for (const kernel of Object.keys(resultJSON.kernels)) {
             const name = resultJSON.kernels[kernel].substring(0, resultJSON.kernels[kernel].indexOf('('));
             if (Object.values(resultJSON.kernels).filter((k) => k.startsWith(name + '(')).length === 1) {
@@ -887,7 +887,7 @@ export class GPUscoutResult {
 
 
                 this._assemblyCodeLines[currentKernel].push({
-                    address: address,
+                    address:  address,//.substring(address.length - 5),// TODO make pc section a dynamic width and use regular address without substring,
                     tokens: labelReg ? [labelReg[2]] : [instReg[1]].concat(instReg[2].trim().split(/([+-,.:[\]() ])/)), // TODO split regex
                     liveRegisters: liveRegisters,
                     stalls: lineStalls
