@@ -143,7 +143,6 @@ export class GPUscoutResult {
         }
         else if (this._vendor === "amd") {
             // TODO PC Sampling
-            console.log(this._vendor);
         }
 
 
@@ -182,7 +181,6 @@ export class GPUscoutResult {
             this._aggregateKernelSourceCode(sourceFileContents, resultJSON.stalls, resultJSON.kernels);
         }
         else if (this._vendor === "amd") {
-            console.log("Test123beforeassemblyCo");
             this._parseAssemblyCode(
                 resultJSON.binary_files.assembly,
                 resultJSON.register_pressure,
@@ -190,14 +188,8 @@ export class GPUscoutResult {
                 resultJSON.kernels
             );
 
-            console.log(this._vendor);
             this._aggregateKernelSourceCodeAMD(sourceFileContents, resultJSON.stalls, resultJSON.kernels);
         }
-
-        console.log("assemblySass");
-        console.log(this._assemblyCodeLines);
-
-
 
         if (!resultJSON.metrics) {
             // Prevent crash on no metrics
@@ -231,9 +223,6 @@ export class GPUscoutResult {
                 else if (this._vendor === 'amd') {
                     binaryMapping = this._assemblyToSourceLines[kernel];
                     binaryLines = this._assemblyCodeLines[kernel];
-
-                    console.log("BinaryMapping: " + binaryMapping);
-                    console.log("BinaryLines: " + binaryLines);
 
                     // Workaround to not adapt all source files to sass/ptx or assembly
                     // Assembly and SASS should be equivalent now
@@ -769,12 +758,6 @@ export class GPUscoutResult {
 
         currentKernel = '';
 
-        console.log("Test123");
-        // Map each line number with the line containing the register information
-        // TODO
-
-        currentKernel = '';
-
         // Iterate through every line of the assembly code object file
         for (let line of assemblyCode.split('\n')) {
             const kernelStart = line.match(regexKrnName);
@@ -785,28 +768,22 @@ export class GPUscoutResult {
 
             const labelReg = line.match(regexBrcLbl);
             const instReg = line.match(regexAssemblyInstruction);
-            //console.log("Inst Reg: " + instReg);
-            //console.log("Line: " + line);
             let address = '';
             let liveRegisters = [];
 
             if (kernelStart) {
-                console.log(kernelStart[1])
                 // ; _Z14spillingKernelPfS_():
                 // We are at the beginning of a new kernel -> Set of relevant maps and change currentKernel and code lines
                 currentSourceLine = 0;
                 currentAssemblyLine = '';
                 mangledKernel = line.replace('; ', '').replace(':', '').replace('()', '');
-                console.log("AMD kernelID: "+ mangledKernel);
                 currentKernel = kernels[mangledKernel]; // demangled kernel
                 // Not all kernels are analyzed by GPUscout, so not every kernel is known
                 if (currentKernel !== mangledKernel) this._kernels.push(currentKernel); // TODO logic error? should always be true in both amd and nvidia
 
-                console.log(kernels);
                 relevantStalls = stalls[mangledKernel] || [];
                 totalStalls = relevantStalls.flatMap((s) => s['stalls'].map((st) => st[1])).reduce((a, b) => a + b, 0);
 
-                console.log("Current Kernel" + currentKernel);
                 this._assemblyToSourceLines[currentKernel] = {};
                 this._assemblyCodeLines[currentKernel] = [
                     {
@@ -828,8 +805,6 @@ export class GPUscoutResult {
                 const sourceLine = filePath[2];
                 const file = filePath[1];
 
-                console.log("File: " + file);
-                console.log("Source Line" + sourceLine);
                 currentSourceLine = sourceLine;
                 currentSourceFile = file;
             }
@@ -837,8 +812,6 @@ export class GPUscoutResult {
                 if (labelReg) {
                     // 0000000000001e80 <L0>:
                     // This line is a label
-
-                    console.log("Label Reg: " + labelReg[2]);
                     address = labelReg[1];
                 }
 
@@ -874,10 +847,6 @@ export class GPUscoutResult {
                     lineStalls['total'] = totalStalls;
                 }
 
-                if (labelReg)
-                console.log(labelReg[2]);
-
-                console.log("addresssse:" + address);
                 // Cut leading 0 for more readable format
                 /*
                 if (address.length > 4) {
@@ -892,8 +861,6 @@ export class GPUscoutResult {
                     liveRegisters: liveRegisters,
                     stalls: lineStalls
                 });
-
-                console.log("Token (Instruction): " + this._assemblyCodeLines[currentKernel][this._assemblyCodeLines[currentKernel].length - 1].tokens);
             }
             else if (line.length === 0) {
                 // empty line (possible in the amd assembly file
