@@ -779,7 +779,7 @@ export class GPUscoutResult {
                 mangledKernel = line.replace('; ', '').replace(':', '').replace('()', '');
                 currentKernel = kernels[mangledKernel]; // demangled kernel
                 // Not all kernels are analyzed by GPUscout, so not every kernel is known
-                if (currentKernel !== mangledKernel) this._kernels.push(currentKernel); // TODO logic error? should always be true in both amd and nvidia
+                if (currentKernel !== mangledKernel) this._kernels.push(currentKernel);
 
                 relevantStalls = stalls[mangledKernel] || [];
                 totalStalls = relevantStalls.flatMap((s) => s['stalls'].map((st) => st[1])).reduce((a, b) => a + b, 0);
@@ -791,7 +791,7 @@ export class GPUscoutResult {
                         tokens: line
                             .trim()
                             .split(/([+-,.:[\]() ])/)
-                            .filter((token) => token.length > 0), // TODO ist dieser split richtig?
+                            .filter((token) => token.length > 0), // TODO Fix regex pattern
                         liveRegisters: [0, 0],
                         stalls: {}
                     }
@@ -819,16 +819,14 @@ export class GPUscoutResult {
                     // 	s_add_i32 s10, s9, 1                                       // 000000001E80: 810A8109
                     // This line is a regular assembly line (instruction) -> Save all relevant information
                     address = instReg[3];
-                    currentAssemblyLine = address; //TODO change wegen Aufnahme = address;
+                    currentAssemblyLine = address;
 
                     this._assemblyToSourceLines[currentKernel][currentAssemblyLine] = {
                         line: currentSourceLine,
                         file: currentSourceFile
                     };
 
-                    //TODO remove these two placeholder lines
-
-                    // Save live register info TODO
+                    // Save live register info
                     if (amdRegisterMap[currentKernel] && amdRegisterMap[currentKernel][address]) {
                         liveRegisters = amdRegisterMap[currentKernel][address];
                     }
@@ -1055,8 +1053,8 @@ export class GPUscoutResult {
                         address: fileLineNumber++,
                         tokens: [sourceFileContents[sourceFile][i - 1]], // The tokens of this line
                         stalls: isMainSourceFile ? lineStalls : [],
-                        hasSassMapping: false, //TODO hasAssemblyMapping
-                        hasSassRelevance: fileIsRelevantForAssembly, //TODO hasAssemblyRelevance
+                        hasSassMapping: false, //TODO hasAssemblyMapping - not needed though because same as sass version -> just handle it the same
+                        hasSassRelevance: fileIsRelevantForAssembly, //TODO hasAssemblyRelevance -> same as before
                         fileName: sourceFile
                     });
                 }
