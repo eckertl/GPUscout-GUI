@@ -3,6 +3,7 @@
 A companion visual user interface for analyzing and understanding findings made by [GPUscout](https://github.com/caps-tum/GPUscout) for Nvidia and AMD kernels.
 
 GPUscout-GUI provides a graphical representation of analysis results computed by the [GPUscout](https://github.com/caps-tum/GPUscout) application. Users are able to view kernel-wide metrics, compare the kernel source and intermediate codes, and investigate findings in more detail than only using GPUscout's output. Optionally, users can add GPU topology information through [MT4G](https://github.com/caps-tum/mt4g).
+![Test Image 1](examples/gui_example.png)
 
 ## Compatibilty Matrix
 
